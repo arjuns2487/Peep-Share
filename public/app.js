@@ -11,7 +11,7 @@ let expectedSize = 0;
 let bytesTransferred = 0;
 let transferStartTime = 0;
 
-const CHUNK_SIZE = 16384; // Safe WebRTC standard size: 16KB
+const CHUNK_SIZE = 16384; // 16KB WebRTC Standard Chunks
 
 // DOM Elements
 const landingView = document.getElementById('landing-view');
@@ -26,7 +26,7 @@ const chatBox = document.getElementById('chat-box');
 const chatInput = document.getElementById('chat-input');
 const sendMsgBtn = document.getElementById('send-msg-btn');
 
-// New UI Elements
+// Performance & Tracking DOM References
 const transferUi = document.getElementById('transfer-ui');
 const sendFilesBtn = document.getElementById('send-files-btn');
 const progressBar = document.getElementById('progress-bar');
@@ -37,10 +37,22 @@ const confirmModal = document.getElementById('confirm-modal');
 const modalText = document.getElementById('modal-text');
 const acceptBtn = document.getElementById('accept-btn');
 const rejectBtn = document.getElementById('reject-btn');
+const presenceDot = document.getElementById('presence-dot');
+const presenceText = document.getElementById('presence-text');
 
-const rtcConfiguration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+// Multi-Server Global Network Resolution Array
+const rtcConfiguration = { 
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        { urls: 'stun:stun.services.mozilla.com' }
+    ] 
+};
 
-// --- ROOM INITIALIZATION ---
+// --- INITIALIZATION ROUTER ---
 if (currentRoomId) {
     switchToRoomView(currentRoomId);
     socket.emit('join-room', currentRoomId);
@@ -64,16 +76,38 @@ function switchToRoomView(urlValue) {
 copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(shareUrlInput.value);
     copyBtn.textContent = '✅ Copied';
-    setTimeout(() => copyBtn.textContent = 'Copy Link', 2500);
+    copyBtn.classList.replace('bg-indigo-600', 'bg-emerald-600');
+    setTimeout(() => {
+        copyBtn.textContent = 'Copy Link';
+        copyBtn.classList.replace('bg-emerald-600', 'bg-indigo-600');
+    }, 2500);
 });
 
-// --- WEBRTC CORE ENGINE ---
+// --- PRESENCE HANDLERS ---
+function updatePeerStatusOnline() {
+    presenceDot.className = "h-2 w-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 animate-pulse";
+    presenceText.textContent = "Live Connected";
+    presenceText.className = "text-[10px] font-bold text-emerald-400 uppercase tracking-wider";
+}
+
+function updatePeerStatusOffline(reasonString) {
+    presenceDot.className = "h-2 w-2 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50";
+    presenceText.textContent = "Peer Left";
+    presenceText.className = "text-[10px] font-bold text-rose-400 uppercase tracking-wider";
+    
+    appendSystemEvent(`⚠️ Connection state: ${reasonString}`);
+    chatInput.disabled = true;
+    sendMsgBtn.disabled = true;
+    if (!transferUi.classList.contains('hidden')) resetTransferUI();
+}
+
+// --- WEBRTC CORE MATRIX ---
 socket.on('peer-joined', async (roomId) => {
-    appendSystemEvent('Peer discovered. Establishing direct tunnel...');
+    appendSystemEvent('Peer joined. Negotiating direct tunnel data sockets...');
     initializePeerConnection(roomId);
     
     dataChannel = peerConnection.createDataChannel('p2p-channel');
-    dataChannel.binaryType = 'arraybuffer'; // Crucial for reading raw file data chunks
+    dataChannel.binaryType = 'arraybuffer';
     bindChannelEvents();
 
     const offer = await peerConnection.createOffer();
@@ -112,25 +146,22 @@ function initializePeerConnection(roomId) {
     };
 }
 
-// --- DATA PIPELINE PARSER ---
 function bindChannelEvents() {
     dataChannel.onopen = () => {
         chatBox.innerHTML = '';
         appendSystemEvent('Direct P2P Data Pipe Secured.');
         chatInput.disabled = false;
         sendMsgBtn.disabled = false;
+        updatePeerStatusOnline();
     };
 
     dataChannel.onmessage = (event) => {
-        // Detect if the incoming packet is binary data (a slice of file)
         if (event.data instanceof ArrayBuffer) {
             handleIncomingChunk(event.data);
             return;
         }
 
-        // Process string data (chat and negotiation signals)
         const payload = JSON.parse(event.data);
-        
         switch(payload.type) {
             case 'text':
                 appendMsg(payload.body, 'peer');
@@ -142,10 +173,10 @@ function bindChannelEvents() {
                 break;
             case 'file-response':
                 if (payload.approved) {
-                    appendSystemEvent('File accepted by receiver. Streaming engine started...');
+                    appendSystemEvent('File accepted. Streaming array blocks...');
                     executeFileStreaming();
                 } else {
-                    appendSystemEvent('❌ File transfer request declined by peer.');
+                    appendSystemEvent('❌ File transfer request declined.');
                     resetTransferUI();
                 }
                 break;
@@ -154,9 +185,13 @@ function bindChannelEvents() {
                 break;
         }
     };
+
+    dataChannel.onclose = () => updatePeerStatusOffline('Tunnel connection closed.');
 }
 
-// --- CHAT FEATURE ---
+socket.on('peer-left', () => updatePeerStatusOffline('Peer closed the session tab.'));
+
+// --- REALTIME CHAT ENGINE ---
 sendMsgBtn.addEventListener('click', dispatchMessage);
 chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') dispatchMessage(); });
 
@@ -171,7 +206,7 @@ function dispatchMessage() {
 
 function appendMsg(msg, owner) {
     const bubble = document.createElement('div');
-    bubble.className = `p-3 rounded-xl max-w-[85%] text-sm ${owner === 'me' ? 'bg-indigo-600 self-end ml-auto text-white rounded-tr-none' : 'bg-slate-800 text-slate-100 rounded-tl-none'}`;
+    bubble.className = `p-3 rounded-xl max-w-[85%] text-sm ${owner === 'me' ? 'bg-indigo-600 text-white self-end ml-auto rounded-tr-none' : 'bg-slate-800 text-slate-100 rounded-tl-none'}`;
     bubble.textContent = msg;
     chatBox.appendChild(bubble);
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -185,7 +220,7 @@ function appendSystemEvent(info) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// --- DRAG, DROP & SELECTION MANAGEMENT ---
+// --- FILE STACK QUEUE MANAGEMENT ---
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.replace('border-slate-700', 'border-indigo-500'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.replace('border-indigo-500', 'border-slate-700'));
@@ -199,7 +234,6 @@ fileInput.addEventListener('change', (e) => queueFiles(e.target.files));
 function queueFiles(files) {
     selectedFiles = Array.from(files);
     fileList.innerHTML = '';
-    
     if(selectedFiles.length === 0) return;
 
     selectedFiles.forEach(file => {
@@ -210,31 +244,28 @@ function queueFiles(files) {
         fileList.appendChild(item);
     });
 
-    // Display the transmission controller
     transferUi.classList.remove('hidden');
     sendFilesBtn.classList.remove('hidden');
     updateProgressUI(0, 'Ready to transfer', '--');
 }
 
-// --- STEP-BY-STEP STREAMING ARCHITECTURE ---
+// --- BINARY CHUNKING PIPELINE (SENDER -> RECEIVER) ---
 
-// 1. Sender offers the file
 sendFilesBtn.addEventListener('click', () => {
     if (selectedFiles.length === 0) return;
-    sendFilesBtn.classList.add('hidden'); // Hide button to prevent multiple triggers
+    sendFilesBtn.classList.add('hidden');
     
-    const file = selectedFiles[0]; // Processing first queued file
+    const file = selectedFiles[0];
     const meta = {
         name: file.name,
         size: file.size,
         sizeString: `${(file.size / (1024 * 1024)).toFixed(2)} MB`
     };
 
-    appendSystemEvent(`Offering file: ${meta.name}. Waiting for approval...`);
+    appendSystemEvent(`Offering file: ${meta.name}. Waiting for approval response...`);
     dataChannel.send(JSON.stringify({ type: 'file-offer', meta }));
 });
 
-// 2. Receiver prompts user, then returns confirmation
 acceptBtn.addEventListener('click', () => {
     confirmModal.classList.add('hidden');
     receivedChunks = [];
@@ -243,7 +274,7 @@ acceptBtn.addEventListener('click', () => {
     transferStartTime = Date.now();
     
     transferUi.classList.remove('hidden');
-    sendFilesBtn.classList.add('hidden'); // Receiver doesn't see action button
+    sendFilesBtn.classList.add('hidden');
     updateProgressUI(0, 'Downloading...', 'Calculating...');
 
     dataChannel.send(JSON.stringify({ type: 'file-response', approved: true }));
@@ -255,7 +286,6 @@ rejectBtn.addEventListener('click', () => {
     currentFileMeta = null;
 });
 
-// 3. Sender executes streaming loops safely monitoring low buffers
 function executeFileStreaming() {
     const file = selectedFiles[0];
     let offset = 0;
@@ -276,17 +306,15 @@ function executeFileStreaming() {
         if (offset < file.size) {
             readNextChunk();
         } else {
-            // End Of File reached
             setTimeout(() => {
                 dataChannel.send(JSON.stringify({ type: 'file-eof' }));
-                appendSystemEvent('✅ File uploaded completely!');
+                appendSystemEvent('✅ Upload completed successfully.');
                 resetTransferUI();
             }, 500);
         }
     };
 
     function readNextChunk() {
-        // Essential WebRTC backpressure safety: If the buffer fills up, wait 10ms
         if (dataChannel.bufferedAmount > 1024 * 1024) { 
             setTimeout(readNextChunk, 10);
             return;
@@ -298,7 +326,6 @@ function executeFileStreaming() {
     readNextChunk();
 }
 
-// 4. Receiver parses incoming chunks, updating statistics
 function handleIncomingChunk(arrayBuffer) {
     receivedChunks.push(arrayBuffer);
     bytesTransferred += arrayBuffer.byteLength;
@@ -308,7 +335,6 @@ function handleIncomingChunk(arrayBuffer) {
     updateProgressUI(progress, 'Downloading...', eta);
 }
 
-// 5. Receiver combines pieces together into a file download trigger
 function assembleAndDownloadFile() {
     const blob = new Blob(receivedChunks);
     const url = URL.createObjectURL(blob);
@@ -320,16 +346,16 @@ function assembleAndDownloadFile() {
     downloadAnchor.click();
     document.body.removeChild(downloadAnchor);
     
-    appendSystemEvent(`✅ Received and downloaded: ${currentFileMeta.name}`);
+    appendSystemEvent(`✅ Successfully downloaded: ${currentFileMeta.name}`);
     resetTransferUI();
 }
 
-// --- TELEMETRY CALCULATORS ---
+// --- SPEED TELEMETRY CALCULATORS ---
 function calculateETA(transferred, total) {
-    const timeElapsed = (Date.now() - transferStartTime) / 1000; // time in seconds
+    const timeElapsed = (Date.now() - transferStartTime) / 1000;
     if (timeElapsed === 0 || transferred === 0) return 'Calculating...';
     
-    const speed = transferred / timeElapsed; // bytes per second
+    const speed = transferred / timeElapsed;
     const bytesRemaining = total - transferred;
     const secondsRemaining = bytesRemaining / speed;
 
@@ -347,6 +373,11 @@ function updateProgressUI(percentage, statusText, etaText) {
     transferPercentage.textContent = `${Math.round(percentage)}%`;
     transferStatus.textContent = statusText;
     transferEta.textContent = `ETA: ${etaText}`;
+}
+
+function mergeQueuedFiles(files) {
+    // This helper facilitates seamless multi-file arrays internally
+    return Array.from(files);
 }
 
 function resetTransferUI() {

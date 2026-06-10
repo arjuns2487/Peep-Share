@@ -8,9 +8,7 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 
 ## 📸 Screenshots
 
-<!-- IMAGE PLACEHOLDER 1: LANDING PAGE -->
-![IMAGE NEEDED: Landing Page Screenshot]
-*Place a screenshot of the landing page with the "Create Room" button and PeepShare branding*
+<img width="1070" height="692" alt="image" src="https://github.com/user-attachments/assets/a888c206-9306-4a8d-94d9-bee24c5a89c5" />
 
 ---
 
@@ -33,20 +31,20 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    PeepShare System                      │
+│                    PeepShare System                     │
 ├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  Sender (Browser)          Server (Node.js)   Receiver  │
-│       │                      (Signaling)         (Browser)
-│       │◄──────── Socket.IO ──────────────────────┤
-│       │                                           │
-│       │         Signaling Exchange                │
-│       ├────── WebRTC Offer/Answer ───────────────┤
-│       │                                           │
-│       ├═════ Direct P2P Data Channel ════════════┤
-│       │  (Files & Messages - No Server Copy)     │
-│       └───────────────────────────────────────────┘
-│
+│                                                         │
+│  Sender (Browser)     Server (Node.js)      Receiver    │
+│       │                  (Signaling)        (Browser)   |
+│       │◄──────── Socket.IO ──────────────────────┤      |
+│       │                                          │      |
+│       │         Signaling Exchange               │      |
+│       ├────── WebRTC Offer/Answer ───────────────┤      |
+│       │                                          │      |
+│       ├═════ Direct P2P Data Channel ════════════┤      |
+│       │  (Files & Messages - No Server Copy)     │      |
+│       └──────────────────────────────────────────┘      |
+│_________________________________________________________|
 ```
 
 ### Step-by-Step Flow
@@ -57,22 +55,16 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 4. **File Transfer**: Sender selects files, receiver accepts, streaming begins
 5. **Direct Communication**: All data flows through encrypted P2P channel
 
-<!-- IMAGE PLACEHOLDER 2: ARCHITECTURE DIAGRAM -->
-![IMAGE NEEDED: Architecture Diagram]
-*Place a more detailed flowchart showing: Landing → Room Created → Room Shared → Peer Connected → File Transfer Flow*
-
----
-
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Frontend** | HTML5, JavaScript (Vanilla) | Client UI & WebRTC handling |
-| **Styling** | Tailwind CSS | Modern responsive design |
-| **Signaling** | Socket.IO | Room management & WebRTC signal relay |
-| **P2P Protocol** | WebRTC Data Channels | File & message transfer |
-| **Backend** | Node.js + Express | HTTP server & signaling broker |
-| **NAT Traversal** | STUN (Google's stun.l.google.com) | ICE candidate gathering |
+| Layer             | Technology                          | Purpose                              |
+|-------------------|-------------------------------------|--------------------------------------|
+| Frontend          | HTML5, JavaScript (Vanilla)         | Client UI & WebRTC handling          |
+| Styling           | Tailwind CSS                        | Modern responsive design             |
+| Signaling         | Socket.IO                           | Room management & WebRTC signal relay|
+| P2P Protocol      | WebRTC Data Channels                | File & message transfer              |
+| Backend           | Node.js + Express                   | HTTP server & signaling broker       |
+| NAT Traversal     | STUN (Google's stun.l.google.com)   | ICE candidate gathering              |
 
 ---
 
@@ -125,7 +117,7 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 5. **Select files** by:
    - Dragging and dropping into the drop zone
    - Clicking to browse and select multiple files
-6. Click **"🚀 Send Files"** to initiate transfer
+6. Click **"Send Files"** to initiate transfer
 7. Wait for receiver to accept the file
 8. Transfer progress displays with percentage and ETA
 
@@ -161,11 +153,11 @@ Peep-Share/
 
 ### File Breakdown
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| **server.js** | ~50 | Node.js signaling server for room management and WebRTC signal relay |
-| **public/app.js** | ~360 | Core frontend logic: WebRTC, file streaming, chat, progress tracking |
-| **public/index.html** | ~90 | Responsive UI with Tailwind CSS |
+| File              | Lines | Purpose                                                              |
+|-------------------|-------|----------------------------------------------------------------------|
+| server.js         | ~50   | Node.js signaling server for room management and WebRTC signal relay |
+| public/app.js     | ~360  | Core frontend logic: WebRTC, file streaming, chat, progress tracking |
+| public/index.html | ~90   | Responsive UI with Tailwind CSS                                      |
 
 ---
 
@@ -233,12 +225,12 @@ const rtcConfiguration = {
 
 ## 📊 Performance Metrics
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Chunk Size** | 16 KB | Optimal for WebRTC stability |
-| **Backpressure Threshold** | 1 MB | Prevents buffer overflow |
-| **Typical Speed** | 1-10 Mbps | Depends on network conditions |
-| **Latency** | < 100ms | LAN; higher over WAN |
+| Metric                 | Value    | Notes                                 |
+|------------------------|----------|---------------------------------------|
+| Chunk Size             | 16 KB    | Optimal for WebRTC stability          |
+| Backpressure Threshold | 1 MB     | Prevents buffer overflow              |
+| Typical Speed          | 1–10 Mbps| Depends on network conditions         |
+| Latency                | < 100 ms | LAN; higher over WAN                  |
 
 ---
 
@@ -311,32 +303,26 @@ docker run -p 3000:3000 peep-share
 
 ## 🐛 Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| **"This room expired or does not exist"** | Sender must create room first; receiver must use the exact shared link |
-| **"This room is already occupied"** | Only 2 peers per room; a third person cannot join |
-| **Files not transferring** | Ensure firewall isn't blocking WebRTC; check browser console for errors |
-| **Chat not working** | P2P connection hasn't established yet; wait for "Direct P2P Data Pipe Secured" message |
-| **Slow transfer speeds** | Check network conditions; may be affected by ISP throttling or NAT traversal |
-| **"Failed to fetch"** | Server is not running; start with `npm start` |
+| Issue                                          | Solution                                                                                 |
+|------------------------------------------------|------------------------------------------------------------------------------------------|
+| "This room expired or does not exist"          | Sender must create room first; receiver must use the exact shared link                  |
+| "This room is already occupied"                | Only 2 peers per room; a third person cannot join                                       |
+| Files not transferring                         | Ensure firewall isn't blocking WebRTC; check browser console for errors                 |
+| Chat not working                               | P2P connection hasn't established yet; wait for "Direct P2P Data Pipe Secured" message |
+| Slow transfer speeds                           | Check network conditions; may be affected by ISP throttling or NAT traversal            |
+| "Failed to fetch"                              | Server is not running; start with `npm start`                                           |
 
 ---
 
-<!-- IMAGE PLACEHOLDER 3: UI SCREENSHOT -->
-![IMAGE NEEDED: Main UI with File & Chat Panels]
-*Place a screenshot showing the split layout: File Matrix on left, Direct Chat on right, with progress bar visible*
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/0a2ddde8-3d9c-4502-bc7e-9f321244139e" />
 
-<!-- IMAGE PLACEHOLDER 4: FILE TRANSFER IN ACTION -->
-![IMAGE NEEDED: File Transfer in Progress]
-*Place a screenshot showing the progress bar, percentage, and ETA during an active file transfer*
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/88b2db85-eac7-43e6-a971-707a1cb9023f" />
 
-<!-- IMAGE PLACEHOLDER 5: CONFIRMATION MODAL -->
-![IMAGE NEEDED: Incoming Files Modal]
-*Place a screenshot of the modal that appears when receiver gets a file offer with Accept/Decline buttons*
+
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/325d406e-3b88-426d-bb08-d22314f84929" />
+
 
 ---
-
-## 📝 Development Notes
 
 ### Signaling Protocol
 
@@ -357,13 +343,13 @@ socket.on('signal', (data) => {
 
 ### Browser Compatibility
 
-| Browser | WebRTC Support | Status |
-|---------|----------------|--------|
-| Chrome / Edge | ✅ | Full support |
-| Firefox | ✅ | Full support |
-| Safari | ✅ | Full support (15+) |
-| Opera | ✅ | Full support |
-| IE 11 | ❌ | Not supported |
+| Browser       | WebRTC Support | Status                  |
+|---------------|----------------|-------------------------|
+| Chrome / Edge | ✅             | Full support            |
+| Firefox       | ✅             | Full support            |
+| Safari        | ✅             | Full support (15+)      |
+| Opera         | ✅             | Full support            |
+| IE 11         | ❌             | Not supported           |
 
 ---
 
@@ -422,7 +408,6 @@ This project is licensed under the **ISC License**. See `LICENSE` file for detai
 
 - Built with ❤️ using modern web standards (WebRTC, Socket.IO, Tailwind CSS)
 - Inspired by the need for simple, privacy-respecting file sharing
-- Thanks to the open-source community for incredible tools
 
 ---
 

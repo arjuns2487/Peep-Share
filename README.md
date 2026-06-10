@@ -1,4 +1,4 @@
-# 🚀 PeepShare
+# PeepShare
 
 > **Instantly share unlimited files and chat directly with anyone, browser-to-browser.**
 
@@ -6,26 +6,26 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <img width="1070" height="692" alt="image" src="https://github.com/user-attachments/assets/a888c206-9306-4a8d-94d9-bee24c5a89c5" />
 
 ---
 
-## ✨ Features
+## Features
 
-- **🔒 Privacy-First P2P**: Files and messages are transferred directly between peers using WebRTC Data Channels. Your server never stores or sees your data.
-- **⚡ High-Speed Transfers**: Optimized chunking (16KB chunks) with backpressure management for smooth, fast file transfers.
-- **💬 Real-Time Chat**: Send instant messages with your peer using the same secure P2P connection.
-- **📊 Transfer Progress**: Live progress bar with upload/download speed and ETA calculations.
-- **📁 Drag & Drop**: Intuitive file selection with drag-and-drop support.
-- **🌐 Browser-Based**: No installation required—works in any modern browser.
-- **🔗 Shareable Links**: Generate unique room URLs to invite peers.
-- **✅ Confirmation Modal**: Receiver can accept or decline incoming file transfers.
+- ** Privacy-First P2P**: Files and messages are transferred directly between peers using WebRTC Data Channels. Your server never stores or sees your data.
+- ** High-Speed Transfers**: Optimized chunking (16KB chunks) with backpressure management for smooth, fast file transfers.
+- ** Real-Time Chat**: Send instant messages with your peer using the same secure P2P connection.
+- ** Transfer Progress**: Live progress bar with upload/download speed and ETA calculations.
+- ** Drag & Drop**: Intuitive file selection with drag-and-drop support.
+- ** Browser-Based**: No installation required—works in any modern browser.
+- ** Shareable Links**: Generate unique room URLs to invite peers.
+- ** Confirmation Modal**: Receiver can accept or decline incoming file transfers.
 
 ---
 
-## 🎯 How It Works
+## How It Works
 
 ### Architecture Overview
 
@@ -55,7 +55,7 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 4. **File Transfer**: Sender selects files, receiver accepts, streaming begins
 5. **Direct Communication**: All data flows through encrypted P2P channel
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer             | Technology                          | Purpose                              |
 |-------------------|-------------------------------------|--------------------------------------|
@@ -68,7 +68,7 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 
 ---
 
-## 📋 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -106,7 +106,7 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 
 ---
 
-## 🚀 Usage Guide
+## Usage Guide
 
 ### For Sender
 
@@ -139,7 +139,7 @@ A peer-to-peer (P2P) file sharing and messaging application built with WebRTC an
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Peep-Share/
@@ -161,7 +161,7 @@ Peep-Share/
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Server Port
 
@@ -187,7 +187,7 @@ const rtcConfiguration = {
 
 ---
 
-## 🔍 How File Streaming Works
+## How File Streaming Works
 
 ### Sender Side
 
@@ -213,7 +213,7 @@ const rtcConfiguration = {
 
 ---
 
-## 💬 Chat Implementation
+## Chat Implementation
 
 - Uses the same **WebRTC Data Channel** as file transfers
 - Messages are JSON-formatted and identified by type (`'text'`)
@@ -223,7 +223,7 @@ const rtcConfiguration = {
 
 ---
 
-## 📊 Performance Metrics
+## Performance Metrics
 
 | Metric                 | Value    | Notes                                 |
 |------------------------|----------|---------------------------------------|
@@ -234,7 +234,7 @@ const rtcConfiguration = {
 
 ---
 
-## 🔐 Security & Privacy
+## Security & Privacy
 
 ### Data Privacy
 
@@ -251,7 +251,7 @@ const rtcConfiguration = {
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 ### Render.com (Live Demo)
 
@@ -301,7 +301,7 @@ docker run -p 3000:3000 peep-share
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Issue                                          | Solution                                                                                 |
 |------------------------------------------------|------------------------------------------------------------------------------------------|
@@ -362,7 +362,7 @@ socket.on('signal', (data) => {
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how to help:
 
@@ -385,26 +385,20 @@ Contributions are welcome! Here's how to help:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **ISC License**. See `LICENSE` file for details.
 
 ---
 
-## 👨‍💻 Author
-
-**Arjun** - [@arjuns2487](https://github.com/arjuns2487)
-
----
-
-## 📞 Support
+## Support
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/arjuns2487/Peep-Share/issues)
 - **Live Demo**: [https://peep-share.onrender.com/](https://peep-share.onrender.com/)
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with ❤️ using modern web standards (WebRTC, Socket.IO, Tailwind CSS)
 - Inspired by the need for simple, privacy-respecting file sharing
